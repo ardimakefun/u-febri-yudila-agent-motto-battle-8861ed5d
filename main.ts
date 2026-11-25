@@ -39,6 +39,16 @@ function main(): void {
   if (written !== MOTTO) {
     throw new Error("entry.txt bytes differ from the motto");
   }
+
+  // Raw-byte read-back check: a string round-trip can hide an encoding
+  // fault, so compare the file's bytes exactly against the motto's UTF-8
+  // encoding. This proves entry.txt holds precisely the bytes the gate
+  // checked and the judge will read.
+  const raw = readFileSync(outPath);
+  const expected = Buffer.from(MOTTO, "utf8");
+  if (!raw.equals(expected)) {
+    throw new Error("entry.txt raw bytes differ from the motto's UTF-8 encoding");
+  }
 }
 
 main();
